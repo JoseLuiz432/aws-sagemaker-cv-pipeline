@@ -3,34 +3,9 @@ import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torchvision import datasets, models, transforms
+from data import create_dataloaders
+from model import load_model_resnet18
 
-def _load_model_resnet18(num_classes):
-    model = models.resnet18(pretrained=True)
-    num_ftrs = model.fc.in_features
-    model.fc = nn.Linear(num_ftrs, num_classes)
-    return model
-
-def _data_transforms_and_loaders(data_dir, batch_size):
-    data_transforms = {
-        'train': transforms.Compose([
-            transforms.RandomResizedCrop(224),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ]),
-        'val': transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ]),
-    }
-
-    image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x]) for x in ['train', 'val']}
-    dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size, shuffle=True, num_workers=4) for x in ['train', 'val']}
-    
-    return dataloaders
 
 def _one_epoch(model, dataloader, criterion, optimizer, device):
     running_loss = 0.0
@@ -63,9 +38,9 @@ def train(args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Utilizando dispositivo: {device}")
 
-    dataloaders = _data_transforms_and_loaders(args.data_dir, args.batch_size)
+    dataloaders = create_dataloaders(args.data_dir, args.batch_size)
 
-    model = _load_model_resnet18(num_classes=2)
+    model = load_model_resnet18()
     model = model.to(device)
 
     criterion = nn.CrossEntropyLoss()
