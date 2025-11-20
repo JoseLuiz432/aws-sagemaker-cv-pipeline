@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.12-blue?style=for-the-badge&logo=python)
 ![AWS](https://img.shields.io/badge/AWS-SageMaker%20%7C%20S3-orange?style=for-the-badge&logo=amazon-aws)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.8-red?style=for-the-badge&logo=pytorch)
-![Status](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Em%20Construção-yellow?style=for-the-badge)
 
 ## 📋 Project Overview
 
@@ -48,4 +48,5 @@ aws-sagemaker-cv-pipeline/
 ├── data/                       # Local raw data (Ignored by Git)
 ├── requirements.txt            # Local dependencies (boto3, sagemaker)
 └── README.md                   # Project documentation
+
 
