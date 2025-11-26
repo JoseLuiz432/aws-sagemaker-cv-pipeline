@@ -13,6 +13,7 @@ venv/
 credentials
 config
 *.pem
+config_private.py
 
 # Dados
 data/
@@ -22,3 +23,5 @@ models/
 
 # IDE
 .vscode/
+
+

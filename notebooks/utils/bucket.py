@@ -22,7 +22,29 @@ def create_bucket_if_not_exists(s3_client, bucket_name, region):
     except Exception as e:
         print(f"❌ Erro ao criar bucket: {e}")
         
-        
+def upload_to_s3_windows(session, local_path, bucket, s3_prefix):
+    """
+    Faz upload corrigindo automaticamente barras invertidas (Windows) para S3.
+    """
+    print(f"Iniciando upload de '{local_path}' para 's3://{bucket}/{s3_prefix}'")
+    
+    s3_client = session.boto_session.client('s3')
+    
+    count = 0
+    for root, dirs, files in os.walk(local_path):
+        for file in files:
+            full_path = os.path.join(root, file)
+            relative_path = os.path.relpath(full_path, local_path)
+            s3_key_path = os.path.join(s3_prefix, relative_path).replace("\\", "/")
+            s3_client.upload_file(full_path, bucket, s3_key_path)
+            count += 1
+            
+            if count % 50 == 0: 
+                print(f"  Upload: {s3_key_path}")
+
+    print(f"Upload finalizado! {count} arquivos enviados.")
+    return f"s3://{bucket}/{s3_prefix}"
+
 def upload_to_s3(session, local_path, bucket, s3_prefix):
     """
     Faz upload de dados locais para um bucket S3.
@@ -47,25 +69,23 @@ def upload_to_s3(session, local_path, bucket, s3_prefix):
     )
     return s3_uri
 
-def upload_to_s3_windows(session, local_path, bucket, s3_prefix):
+def upload_file_to_s3(session, local_file, bucket, s3_key):
     """
-    Faz upload corrigindo automaticamente barras invertidas (Windows) para S3.
+    Faz upload de um único arquivo para um bucket S3.
+    Args:
+        session: boto session.
+        local_file: Caminho local do arquivo a ser enviado.
+        bucket: Nome do bucket S3.
+        s3_key: Chave (caminho) no bucket S3 onde o arquivo será armazenado.
+    Returns:
+        s3_uri: URI do S3 onde o arquivo foi enviado.
     """
-    print(f"Iniciando upload de '{local_path}' para 's3://{bucket}/{s3_prefix}'")
+    print(f"Iniciando upload de '{local_file}' para 's3://{bucket}/{s3_key}'")
     
     s3_client = session.boto_session.client('s3')
+    s3_client.upload_file(local_file, bucket, s3_key)
     
-    count = 0
-    for root, dirs, files in os.walk(local_path):
-        for file in files:
-            full_path = os.path.join(root, file)
-            relative_path = os.path.relpath(full_path, local_path)
-            s3_key_path = os.path.join(s3_prefix, relative_path).replace("\\", "/")
-            s3_client.upload_file(full_path, bucket, s3_key_path)
-            count += 1
-            
-            if count % 50 == 0: 
-                print(f"  Upload: {s3_key_path}")
+    s3_uri = f"s3://{bucket}/{s3_key}"
+    print(f"Upload finalizado! Arquivo enviado para: {s3_uri}")
+    return s3_uri
 
-    print(f"Upload finalizado! {count} arquivos enviados.")
-    return f"s3://{bucket}/{s3_prefix}"
