@@ -42,6 +42,8 @@ aws-sagemaker-cv-pipeline/
 │   │   ├── 01_setup_data.ipynb # Data Engineering: S3 creation & Upload
 │   │   ├── 02_training.ipynb   # Model Training: SageMaker Estimator
 │   │   └── 03_inference.ipynb  # Deployment & Prediction
+│   │   ├── ppe /                  # Personal Protective Equipment project notebooks
+│   │   │   ├── ...                  # (Similar structure as hymenoptera)
 │   └── utils/                  # Helper functions
 │
 ├── data/                       # Local raw data (Ignored by Git)
